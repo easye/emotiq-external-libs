@@ -30,6 +30,12 @@ case ${uname_s} in
         GMP_CONFIGURE_FLAGS="--host=core2-apple-darwin17.5.0 --enable-static --disable-assembly"
         PBC_CONFIGURE_FLAGS="--enable-static"
         ;;
+    FreeBSD*)
+        arch=freebsd
+        GMP_CONFIGURE_FLAGS="--enable-static --disable-assembly"
+        PBC_CONFIGURE_FLAGS="--enable-static"
+        ;;
+
     *)
         echo Unknown OS \"$(uname_s)\"
 
@@ -48,17 +54,20 @@ inc=${prefix}/include
 
 # PBC depends on GMP, so build GMP first
 
-if [[ ${uname_s} = Linux* ]] ; then
-  export CFLAGS="-I${inc} -fPIC"
-  export CPPFLAGS="-I${inc} -fPIC"
-  export CXXFLAGS="-I${inc} -fPIC"
-  export LDFLAGS=-L${lib}
-else
-  export CFLAGS="-I${inc}"
-  export CPPFLAGS="-I${inc}"
-  export CXXFLAGS="-I${inc}"
-  export LDFLAGS=-L${lib}
-fi
+case ${uname_s} in
+    FreeBSD*|Linux*)
+        export CFLAGS="-I${inc} -fPIC"
+        export CPPFLAGS="-I${inc} -fPIC"
+        export CXXFLAGS="-I${inc} -fPIC"
+        export LDFLAGS=-L${lib}
+        ;;
+   *)
+       export CFLAGS="-I${inc}"
+       export CPPFLAGS="-I${inc}"
+       export CXXFLAGS="-I${inc}"
+       export LDFLAGS=-L${lib}
+       ;;
+esac
 
 mkdir -p ${src}
 
